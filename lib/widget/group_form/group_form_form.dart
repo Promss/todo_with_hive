@@ -1,8 +1,21 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:todo_hive/domain/entity/group.dart';
 
 class GroupsFormWidgetModel {
   var groupName = '';
-  void saveGroup(BuildContext context) {}
+  void saveGroup(BuildContext context) async {
+    if (groupName.isEmpty) return;
+    if (!Hive.isAdapterRegistered(1)) {
+      Hive.registerAdapter(GroupAdapter());
+    }
+    final box = await Hive.openBox<Group>('groups_box');
+    final group = Group(name: groupName);
+    await box.add(group);
+    Navigator.of(context).pop();
+  }
 }
 
 class GroupsFormWidgetModelProvider extends InheritedWidget {
